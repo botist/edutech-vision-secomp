@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secomp-edutech-vision"
+version = "0.1.0"
+description = "Trilha 3 - EduTech: atencao, postura e engajamento com PDI em tempo real."
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Fernando Cobianchi" },
+  { name = "Samuel Bernini" }
+]
+dependencies = [
+  "mediapipe==0.10.35",
+  "opencv-contrib-python==4.11.0.86",
+  "numpy==1.26.4",
+  "matplotlib==3.10.9",
+  "onnxruntime==1.26.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.4.2",
+  "ruff==0.15.13",
+]
+
+[project.scripts]
+edutech-vision = "edutech_vision.__main__:main"
+edutech-launcher = "edutech_vision.launcher:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+pythonpath = ["src"]

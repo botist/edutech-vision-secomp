@@ -1,0 +1,43 @@
+.venv/
+.conda/
+.tools/
+AGENTS.md
+cade/
+dados/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Generated protocol outputs. Keep .gitkeep so the folder exists.
+results/*
+!results/.gitkeep
+
+# Generated audit/report folders that are useful locally but too noisy for GitHub.
+docs/manual_face_audit*/
+docs/artigo/
+docs/poster/
+
+# Local video/image captures must not be committed by default.
+assets/private/
+assets/models/*.task
+assets/models/*.onnx
+assets/benchmarks/
+*.avi
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.jpg
+*.jpeg
+*.png
+!docs/entrega_professor/poster_secomp_grupo3.png
+!results/.gitkeep
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

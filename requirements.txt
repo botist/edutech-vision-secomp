@@ -1,0 +1,5 @@
+mediapipe==0.10.35
+opencv-contrib-python==4.11.0.86
+numpy==1.26.4
+matplotlib==3.10.9
+onnxruntime==1.26.0
