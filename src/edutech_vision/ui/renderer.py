@@ -54,7 +54,7 @@ def compose_dashboard(
     bars: list[tuple[str, float, float, float, tuple[int, int, int]]] | None = None,
     events: list[str] | None = None,
     insight: str | None = None,
-    footer: str = "Q sai | Logs em results/",
+    footer: str = "",
 ) -> np.ndarray:
     height, width = frame.shape[:2]
     compact = height < 650
@@ -119,15 +119,16 @@ def compose_dashboard(
         if max_events > 0:
             draw_event_timeline(canvas, x0, y + 8, panel_width - 60, events, max_events=max_events, line_height=line_height)
 
-    cv2.putText(
-        canvas,
-        footer,
-        (x0, height - 24),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.42 if compact else 0.52,
-        MUTED,
-        1,
-    )
+    if footer:
+        cv2.putText(
+            canvas,
+            footer,
+            (x0, height - 24),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.42 if compact else 0.52,
+            MUTED,
+            1,
+        )
     return canvas
 
 

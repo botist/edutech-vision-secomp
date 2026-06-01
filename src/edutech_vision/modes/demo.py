@@ -151,7 +151,6 @@ class DemoMode:
             bars=bars if self.config.showcase else None,
             events=self.timeline.formatted() if self.config.showcase else None,
             insight="Simulacao didatica: mostra o fluxo visual completo quando a camera nao estiver disponivel.",
-            footer="Q sai | Demo sintetica",
         )
 
     def _record_transitions(self, data: SyntheticFrame) -> None:
