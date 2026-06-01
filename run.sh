@@ -70,14 +70,14 @@ invoke_python_probe() {
 import platform
 import sys
 
-ok = (3, 10) <= sys.version_info[:2] < (3, 12) and platform.architecture()[0] == "64bit"
+ok = sys.version_info[:2] == (3, 11) and platform.architecture()[0] == "64bit"
 raise SystemExit(0 if ok else 1)
 PY
 }
 
 find_compatible_python() {
   local candidate
-  for candidate in "$VENV_PYTHON" python3.11 python3.10 python3 python; do
+  for candidate in "$VENV_PYTHON" python3.11 python3 python; do
     if [[ "$candidate" == "$VENV_PYTHON" ]]; then
       [[ -x "$candidate" ]] || continue
     elif ! command -v "$candidate" >/dev/null 2>&1; then
@@ -109,7 +109,7 @@ install_uv() {
   elif command -v wget >/dev/null 2>&1; then
     wget -qO- https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="$UV_DIR" sh
   else
-    die "Instale curl/wget ou Python 3.10/3.11 antes de rodar o setup."
+    die "Instale curl/wget ou Python 3.11 antes de rodar o setup."
   fi
 
   [[ -x "$UV_BIN" ]] || die "uv nao foi encontrado em $UV_BIN."
@@ -232,7 +232,7 @@ EOF
       cat <<'EOF'
 
 Setup concluido, mas o Control Center precisa de Tkinter/Tcl-Tk.
-No macOS, use um Python 3.10/3.11 com Tkinter funcional, por exemplo via python.org ou Homebrew.
+No macOS, use um Python 3.11 com Tkinter funcional, por exemplo via python.org ou Homebrew.
 
 Enquanto isso, o CLI ja esta instalado. Exemplo:
   ./.venv/bin/python -m edutech_vision --mode demo --showcase

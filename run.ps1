@@ -124,6 +124,17 @@ function Create-VenvWithUv {
     if ($LASTEXITCODE -ne 0) {
         throw "Falha ao criar .venv com uv."
     }
+    Assert-VenvReady
+}
+
+function Assert-VenvReady {
+    $venvPython = Resolve-VenvPython
+    if (-not $venvPython) {
+        throw "Python do ambiente .venv nao encontrado apos criacao."
+    }
+    if (-not (Test-ProjectPython $venvPython)) {
+        throw "Ambiente .venv criado, mas Python local nao atende aos requisitos: Windows 64-bit, Python 3.11 e Tkinter funcional."
+    }
 }
 
 function Ensure-Venv {
@@ -150,6 +161,8 @@ function Ensure-Venv {
         }
         Write-Host "Python encontrado, mas venv/ensurepip falhou; usando uv como fallback." -ForegroundColor Yellow
         Create-VenvWithUv
+    } else {
+        Assert-VenvReady
     }
 }
 

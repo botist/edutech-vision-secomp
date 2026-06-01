@@ -5,6 +5,7 @@ import csv
 import importlib.metadata
 import subprocess
 import sys
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -179,12 +180,13 @@ def check_environment(camera_check: bool, camera: int) -> list[CheckResult]:
     checks.append(
         result(
             section,
-            "Python do ambiente esta entre 3.10 e 3.11.",
-            (3, 10) <= sys.version_info[:2] < (3, 12),
+            "Python do ambiente esta em 3.11.",
+            sys.version_info[:2] == (3, 11),
             sys.version.split()[0],
         )
     )
     checks.append(check_requirements_pinned())
+    checks.append(check_requirements_match_pyproject())
     checks.append(check_installed_editable())
 
     help_result = run([sys.executable, "-m", "edutech_vision", "--help"])
@@ -444,6 +446,28 @@ def check_requirements_pinned() -> CheckResult:
     lines = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and not line.startswith("#")]
     unpinned = [line for line in lines if "==" not in line]
     return result("2. Ambiente Python", "Dependencias estao nas versoes pinadas em `requirements.txt`.", not unpinned, "todas pinadas" if not unpinned else "; ".join(unpinned))
+
+
+def check_requirements_match_pyproject() -> CheckResult:
+    requirements = set(read_requirement_lines(ROOT_DIR / "requirements.txt"))
+    dev_requirements = set(read_requirement_lines(ROOT_DIR / "requirements-dev.txt"))
+    pyproject = tomllib.loads((ROOT_DIR / "pyproject.toml").read_text(encoding="utf-8"))
+    project = pyproject.get("project", {})
+    project_requirements = set(project.get("dependencies", []))
+    project_dev = set(project.get("optional-dependencies", {}).get("dev", []))
+
+    mismatches = []
+    if requirements != project_requirements:
+        mismatches.append("runtime")
+    if dev_requirements != project_dev:
+        mismatches.append("dev")
+    ok = not mismatches
+    detail = "requirements.txt, requirements-dev.txt e pyproject.toml alinhados" if ok else "divergencia: " + ", ".join(mismatches)
+    return result("2. Ambiente Python", "Dependencias de requirements e pyproject estao sincronizadas.", ok, detail)
+
+
+def read_requirement_lines(path: Path) -> list[str]:
+    return [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and not line.startswith("#")]
 
 
 def check_installed_editable() -> CheckResult:

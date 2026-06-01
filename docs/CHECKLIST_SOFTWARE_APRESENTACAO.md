@@ -62,7 +62,7 @@ git tag --list
 ## 2. Ambiente Python
 
 - [ ] Ambiente `.venv` existe.
-- [ ] Python do ambiente esta entre 3.10 e 3.11.
+- [ ] Python do ambiente esta em 3.11.
 - [ ] Dependencias estao nas versoes pinadas em `requirements.txt`.
 - [ ] Pacote local esta instalado em modo editavel.
 - [ ] `.\scripts\python.bat -m edutech_vision --help` funciona no Windows; `./scripts/python.sh -m edutech_vision --help` funciona no Linux/macOS.

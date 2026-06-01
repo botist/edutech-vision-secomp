@@ -10,6 +10,14 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 *.egg-info/
+build/
+dist/
+*.whl
+*.tar.gz
+pip-wheel-metadata/
+htmlcov/
+.coverage
+coverage.xml
 
 # Generated protocol outputs. Keep .gitkeep so the folder exists.
 results/*

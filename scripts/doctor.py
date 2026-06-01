@@ -30,9 +30,9 @@ def main() -> None:
     print("EduTech Vision - diagnostico")
     print(f"Python: {sys.version.split()[0]} ({platform.platform()})")
 
-    if not (3, 10) <= sys.version_info[:2] < (3, 12):
+    if sys.version_info[:2] != (3, 11):
         ok = False
-        print("[ERRO] Use Python >=3.10 e <3.12 para compatibilidade com MediaPipe.")
+        print("[ERRO] Use Python 3.11 para reproduzir o ambiente validado do projeto.")
     else:
         print("[OK] Versao de Python compativel.")
 

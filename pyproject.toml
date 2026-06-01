@@ -7,7 +7,7 @@ name = "secomp-edutech-vision"
 version = "0.1.0"
 description = "Trilha 3 - EduTech: atencao, postura e engajamento com PDI em tempo real."
 readme = "README.md"
-requires-python = ">=3.10,<3.12"
+requires-python = ">=3.11,<3.12"
 license = { text = "MIT" }
 authors = [
   { name = "Fernando Cobianchi" },
@@ -25,6 +25,7 @@ dependencies = [
 dev = [
   "pytest==8.4.2",
   "ruff==0.15.13",
+  "python-docx==1.1.2",
 ]
 
 [project.scripts]

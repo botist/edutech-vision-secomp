@@ -42,7 +42,7 @@ cd edutech-vision-secomp
 ./run.sh
 ```
 
-Esse unico comando prepara tudo e abre o Control Center. No Windows, se a maquina nao tiver Python 3.11, o projeto baixa `uv`, baixa um Python 3.11 local dentro de `.tools/`, cria `.venv`, instala dependencias e baixa os modelos, sem mexer no Python global e sem Visual Studio Build Tools. No Linux/macOS, o script usa Python 3.10/3.11 existente ou baixa `uv` localmente para criar um ambiente isolado.
+Esse unico comando prepara tudo e abre o Control Center. No Windows, se a maquina nao tiver Python 3.11, o projeto baixa `uv`, baixa um Python 3.11 local dentro de `.tools/`, cria `.venv`, instala dependencias e baixa os modelos, sem mexer no Python global e sem Visual Studio Build Tools. No Linux/macOS, o script usa Python 3.11 existente ou baixa `uv` localmente para criar um ambiente isolado.
 
 Observacao para Linux/macOS: o setup instala as dependencias Python, mas sistemas desktop muito enxutos podem nao vir com Tkinter/OpenGL. Se o Control Center nao abrir, o proprio `./run.sh` mostra o pacote de sistema que falta; o CLI continua instalado.
 
@@ -174,6 +174,7 @@ Rodar testes unitarios e lint:
 ```powershell
 .\scripts\python.bat -m pytest -q
 .\scripts\python.bat -m ruff check src tests scripts
+.\scripts\python.bat -m pip check
 ```
 
 ## Benchmark Com Imagens E Videos Reais
