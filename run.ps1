@@ -10,10 +10,10 @@ $ProgressPreference = "SilentlyContinue"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Root
 
-$PythonVersion = "3.11.9"
-$PythonDir = Join-Path $Root ".tools\python-$PythonVersion"
-$PythonInstaller = Join-Path $Root ".tools\python-$PythonVersion-amd64.exe"
-$BootstrapPython = Join-Path $PythonDir "python.exe"
+$UvDir = Join-Path $Root ".tools\uv"
+$UvExe = Join-Path $UvDir "uv.exe"
+$UvZip = Join-Path $Root ".tools\uv-x86_64-pc-windows-msvc.zip"
+$UvPythonDir = Join-Path $Root ".tools\uv-python"
 $StampPath = Join-Path $Root ".venv\.edutech-bootstrap"
 
 function Step($Message) {
@@ -40,10 +40,6 @@ function Get-CompatiblePython {
             $candidates += @{ Exe = $name; Args = @() }
         }
     }
-    if (Test-Path $BootstrapPython) {
-        $candidates += @{ Exe = $BootstrapPython; Args = @() }
-    }
-
     foreach ($candidate in $candidates) {
         $probe = @"
 import platform, sys, tkinter
@@ -70,35 +66,64 @@ function Invoke-PythonProbe($Exe, [string[]]$PythonArgs, $Probe) {
     }
 }
 
-function Install-ProjectPython {
-    Step "Baixando Python $PythonVersion local"
-    New-Item -ItemType Directory -Force -Path (Join-Path $Root ".tools") | Out-Null
-    if (-not (Test-Path $PythonInstaller)) {
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $url = "https://www.python.org/ftp/python/$PythonVersion/python-$PythonVersion-amd64.exe"
-        Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $PythonInstaller
+function Remove-ProjectItem($Path) {
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $rootPath = [System.IO.Path]::GetFullPath($Root).TrimEnd("\")
+    if (-not $fullPath.StartsWith($rootPath + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Recusando remover caminho fora do projeto: $fullPath"
+    }
+    if (Test-Path $fullPath) {
+        Remove-Item -LiteralPath $fullPath -Recurse -Force
+    }
+}
+
+function Install-Uv {
+    if (Get-Command uv -ErrorAction SilentlyContinue) {
+        return (Get-Command uv).Source
+    }
+    if (Test-Path $UvExe) {
+        return $UvExe
     }
 
-    Step "Instalando Python local do projeto"
-    $arguments = @(
-        "/quiet",
-        "InstallAllUsers=0",
-        "PrependPath=0",
-        "Include_launcher=0",
-        "Include_pip=1",
-        "Include_tcltk=1",
-        "Include_test=0",
-        "SimpleInstall=1",
-        "TargetDir=`"$PythonDir`""
-    )
-    $process = Start-Process -FilePath $PythonInstaller -ArgumentList $arguments -Wait -PassThru
-    if ($process.ExitCode -ne 0) {
-        throw "Instalador do Python falhou com codigo $($process.ExitCode)."
+    Step "Baixando uv local"
+    New-Item -ItemType Directory -Force -Path $UvDir | Out-Null
+    $downloadUrl = "https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-pc-windows-msvc.zip"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile $UvZip
+
+    $extractDir = Join-Path $Root ".tools\uv-extract"
+    if (Test-Path $extractDir) {
+        Remove-ProjectItem $extractDir
     }
-    if (-not (Test-Path $BootstrapPython)) {
-        throw "Python local nao foi encontrado em $BootstrapPython."
+    New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+    Expand-Archive -LiteralPath $UvZip -DestinationPath $extractDir -Force
+
+    $candidate = Get-ChildItem -LiteralPath $extractDir -Recurse -Filter "uv.exe" | Select-Object -First 1
+    if (-not $candidate) {
+        throw "uv.exe nao foi encontrado no pacote baixado."
     }
-    return @{ Exe = $BootstrapPython; Args = @() }
+    Copy-Item -LiteralPath $candidate.FullName -Destination $UvExe -Force
+    Remove-ProjectItem $extractDir
+
+    if (-not (Test-Path $UvExe)) {
+        throw "uv local nao foi encontrado em $UvExe."
+    }
+    return $UvExe
+}
+
+function Create-VenvWithUv {
+    $uv = Install-Uv
+    Step "Criando ambiente virtual .venv com uv"
+    New-Item -ItemType Directory -Force -Path $UvPythonDir | Out-Null
+    $env:UV_PYTHON_INSTALL_DIR = $UvPythonDir
+    & $uv python install "3.11"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao baixar Python 3.11 com uv."
+    }
+    & $uv venv --seed --python "3.11" ".venv"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Falha ao criar .venv com uv."
+    }
 }
 
 function Ensure-Venv {
@@ -113,13 +138,18 @@ function Ensure-Venv {
     }
     $python = Get-CompatiblePython
     if ($null -eq $python) {
-        $python = Install-ProjectPython
+        Create-VenvWithUv
+        return
     }
 
     Step "Criando ambiente virtual .venv"
     & $python.Exe @($python.Args) -m venv .venv
     if ($LASTEXITCODE -ne 0) {
-        throw "Falha ao criar .venv."
+        if (Test-Path (Join-Path $Root ".venv")) {
+            Remove-ProjectItem (Join-Path $Root ".venv")
+        }
+        Write-Host "Python encontrado, mas venv/ensurepip falhou; usando uv como fallback." -ForegroundColor Yellow
+        Create-VenvWithUv
     }
 }
 

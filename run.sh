@@ -132,7 +132,7 @@ create_venv_with_uv() {
   mkdir -p "$UV_PYTHON_DIR"
   export UV_PYTHON_INSTALL_DIR="$UV_PYTHON_DIR"
   "$uv_exe" python install "$PYTHON_REQUEST"
-  "$uv_exe" venv --python "$PYTHON_REQUEST" "$VENV_DIR"
+  "$uv_exe" venv --seed --python "$PYTHON_REQUEST" "$VENV_DIR"
 }
 
 ensure_venv() {
