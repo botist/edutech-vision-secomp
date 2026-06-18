@@ -23,10 +23,13 @@ Detector YuNet para localizar faces, landmarks MediaPipe nos recortes, metricas 
 ## Perguntas de metodologia
 
 **Como validaram acuracia?**  
-Com WIDER FACE para deteccao anotada, benchmark smoke reproduzivel e auditoria HQ em videos 1080p completos. Comparamos o baseline MediaPipe contra YuNet, medindo recall, precisao, F1, IoU e FPS.
+Com WIDER FACE para deteccao anotada, benchmark smoke reproduzivel, auditoria HQ em videos 1080p completos e uma auditoria propria do modo Individual em videos frontais completos. Comparamos o baseline MediaPipe contra YuNet e tambem validamos o pipeline final de face, landmarks, EAR/MAR, pose e baseline.
 
 **Qual foi o resultado mensurado?**
-No smoke benchmark com a configuracao atual, recall de face do Individual subiu de `0.193` para `0.592`; na Plateia, de `0.011` para `0.443`. A precisao enhanced ficou em `0.894` e `0.851`, com `29.0` e `74.5 FPS`. Na auditoria HQ em videos completos, `enhanced_c60_m24` ficou com erro medio de `0.636` rosto e 10/11 casos com erro de no maximo 1 rosto.
+No smoke benchmark com a configuracao atual, recall de face do Individual subiu de `0.193` para `0.592`; na Plateia, de `0.011` para `0.443`. A precisao enhanced ficou em `0.894` e `0.851`, com `29.0` e `74.5 FPS`. Na auditoria HQ de Plateia, `enhanced_c60_m24` ficou com erro medio de `0.636` rosto e 10/11 casos com erro de no maximo 1 rosto. Na auditoria especifica do Individual, foram `15.193` frames de videos frontais completos, com `86,6%` de frames com face/metricas validas, `82,5%` frontais e deltas medianos de `4,0 deg` em yaw e `1,8 deg` em pitch.
+
+**O que melhorou no modo Individual alem do detector?**
+A calibracao agora espera a primeira face valida antes de contar os 5 segundos; o baseline usa media circular para angulos, evitando erro quando pitch aparece como `+179/-179`; os limiares de EAR/MAR sao adaptados pelo baseline; e o alerta de olho fechado exige ambos os olhos fechados para reduzir falso positivo de piscada ou landmark instavel.
 
 **Por que usar YuNet antes do MediaPipe?**
 O MediaPipe continua excelente para landmarks, mas perdia rostos pequenos no frame completo. YuNet encontra a regiao da face; ao aplicar os landmarks no recorte ampliado, recuperamos rostos distantes sem treinar modelo proprio.

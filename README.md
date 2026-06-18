@@ -222,6 +222,15 @@ Benchmark smoke medido no notebook de desenvolvimento:
 
 `Recall face` mede a localizacao visual da caixa. `Recall landmarks` mede as deteccoes que tambem sustentam EAR/MAR/pose; rostos distantes detectados sem landmarks aparecem no painel, mas nao entram no percentual de engajamento.
 
+Auditoria especifica do Modo Individual em videos frontais completos:
+
+```powershell
+.\scripts\python.bat scripts\download_individual_benchmarks.py
+.\scripts\python.bat scripts\audit_individual_media.py --media-dir assets\benchmarks\individual --output-dir results\individual_media_audit --detector enhanced --confidence 0.70 --frame-step 1 --max-video-seconds 0
+```
+
+No conjunto atual, o auditor processou `15.193` frames de videos 1080p frontais, com `86,6%` de frames com face/metricas validas, `82,5%` frontais e deltas medianos de `4,0 deg` em yaw e `1,8 deg` em pitch. As midias brutas ficam em `assets/benchmarks/individual/` e sao ignoradas pelo Git.
+
 ## Protocolos Experimentais
 
 Os scripts abaixo geram resultados em `results/`:

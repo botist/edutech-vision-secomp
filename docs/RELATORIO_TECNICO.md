@@ -35,7 +35,7 @@ Modulos principais:
 
 ## 3. Modo Individual
 
-O sistema detecta uma face, calcula EAR e MAR, estima pose da cabeca e suaviza os sinais por media movel. Os primeiros 5 segundos sao usados como baseline neutro.
+O sistema detecta uma face, calcula EAR e MAR, estima pose da cabeca e suaviza os sinais por media movel. A calibracao usa os primeiros 5 segundos a partir da primeira amostra facial valida, nao simplesmente a partir da abertura do app. Isso evita baseline vazio quando um video ou webcam inicia com tela sem rosto.
 
 Alertas:
 
@@ -44,7 +44,7 @@ Alertas:
 - queda postural: diferenca de pitch acima de tolerancia;
 - desatencao: diferenca de yaw acima de tolerancia.
 
-Os alertas exigem persistencia temporal para evitar falsos positivos causados por piscadas ou movimentos rapidos.
+Os alertas exigem persistencia temporal para evitar falsos positivos causados por piscadas ou movimentos rapidos. O baseline de yaw/pitch usa estatistica circular, porque em solvePnP uma face frontal pode aparecer perto de `+179` ou `-179` graus; esses valores sao praticamente equivalentes e nao devem ser tratados como extremos opostos. Para fadiga ocular, o alerta exige queda simultanea do EAR medio e dos dois olhos, reduzindo falso positivo de um landmark instavel.
 
 ## 4. Modo Plateia
 
@@ -82,6 +82,8 @@ Os scripts em `tests/` executam os cinco protocolos exigidos:
 - No modo plateia, a configuracao padrao usa uma passagem YuNet por frame: no benchmark ela preservou o ganho de recall e eliminou o custo instavel da segunda escala.
 
 No benchmark smoke com a configuracao atual, o perfil `enhanced` obteve recall de face `0.592` no Individual e `0.443` na Plateia, contra `0.193` e `0.011` do baseline. A precisao foi `0.894`/`0.851`, e o FPS em 960x540 foi `29.0`/`74.5`. A auditoria HQ em videos completos confirmou o melhor ajuste de Plateia como `enhanced_c60_m24`, com erro medio de `0.636` rosto e 10/11 casos com erro de no maximo 1 rosto. O relatorio tambem separa recall de landmarks (`0.294`/`0.089`), pois uma caixa distante nao implica pose valida.
+
+Para o pipeline final do Modo Individual, uma auditoria separada processou videos frontais 1080p completos, redimensionados para a mesma resolucao operacional do app. Foram `15.193` frames: `86,6%` com face e metricas validas, `82,5%` classificados como frontais e deltas medianos de `4,0 deg` em yaw e `1,8 deg` em pitch. As principais falhas restantes nesses videos sao cartelas/b-roll sem pessoa no quadro e expressoes nao neutras, nao perda sistematica de rosto frontal.
 
 ## 7. Limitacoes
 
