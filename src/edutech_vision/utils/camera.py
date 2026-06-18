@@ -43,12 +43,12 @@ class ResilientVideoSource:
 
         ok, frame = self.capture.read()
         if ok and frame is not None:
-            return True, frame
+            return True, resize_frame(frame, self.width, self.height)
 
         if not self.is_camera:
             self.capture.set(cv2.CAP_PROP_POS_FRAMES, 0)
             ok, frame = self.capture.read()
-            return bool(ok and frame is not None), frame if ok else None
+            return bool(ok and frame is not None), resize_frame(frame, self.width, self.height) if ok and frame is not None else None
 
         self.release()
         self._try_reconnect()
@@ -64,6 +64,14 @@ class ResilientVideoSource:
         if self.capture is not None:
             self.capture.release()
         self.capture = None
+
+
+def resize_frame(frame: np.ndarray, width: int, height: int) -> np.ndarray:
+    current_height, current_width = frame.shape[:2]
+    if current_width == width and current_height == height:
+        return frame
+    interpolation = cv2.INTER_AREA if current_width > width or current_height > height else cv2.INTER_LINEAR
+    return cv2.resize(frame, (width, height), interpolation=interpolation)
 
 
 def blank_frame(width: int, height: int, message: str) -> np.ndarray:

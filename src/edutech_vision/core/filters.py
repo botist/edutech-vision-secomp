@@ -34,6 +34,10 @@ class MetricSmoother:
             smoothed[name] = smoother.update(value)
         return smoothed
 
+    def reset(self) -> None:
+        for smoother in self._filters.values():
+            smoother.reset()
+
 
 class SustainedCondition:
     def __init__(self, seconds: float) -> None:
