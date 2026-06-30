@@ -13,7 +13,7 @@ from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import Image, PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from xml.sax.saxutils import escape
 
 
@@ -360,6 +360,14 @@ def add_body_paragraph(document: Document, text: str, *, first: bool = False) ->
     set_paragraph_font(paragraph)
 
 
+def add_reference_paragraph(document: Document, text: str) -> None:
+    paragraph = document.add_paragraph(text)
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    paragraph.paragraph_format.first_line_indent = Cm(0)
+    paragraph.paragraph_format.space_after = Pt(4)
+    set_paragraph_font(paragraph, size=11)
+
+
 def add_caption(document: Document, text: str) -> None:
     paragraph = document.add_paragraph(text)
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -460,6 +468,7 @@ def build_docx() -> None:
     add_caption(document, "Tabela 2. Auditoria do modo individual em vídeos frontais completos.")
     add_table(document, TABLE_INDIVIDUAL_AUDIT)
     add_body_paragraph(document, RESULT_PARAGRAPHS[2], first=False)
+    document.add_page_break()
     add_caption(document, "Tabela 3. Auditoria HQ de plateia com enhanced, confiança 0,60 e 24 faces.")
     add_table(document, TABLE_AUDIENCE_AUDIT)
     add_body_paragraph(document, RESULT_PARAGRAPHS[3], first=False)
@@ -473,7 +482,7 @@ def build_docx() -> None:
     add_body_paragraph(document, ACKNOWLEDGMENTS, first=True)
     add_section_heading(document, "Referências")
     for reference in REFERENCES:
-        add_body_paragraph(document, reference, first=True)
+        add_reference_paragraph(document, reference)
 
     document.save(DOCX_OUTPUT)
 
@@ -630,6 +639,7 @@ def build_pdf() -> None:
     story.append(pdf_table(TABLE_INDIVIDUAL_AUDIT, styles))
     story.append(Spacer(1, 7))
     story.append(pdf_paragraph(RESULT_PARAGRAPHS[2], body))
+    story.append(PageBreak())
     story.append(pdf_paragraph("Tabela 3. Auditoria HQ de plateia com enhanced, confiança 0,60 e 24 faces.", caption))
     story.append(pdf_table(TABLE_AUDIENCE_AUDIT, styles))
     story.append(Spacer(1, 7))
