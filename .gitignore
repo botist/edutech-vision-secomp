@@ -27,6 +27,12 @@ results/*
 docs/manual_face_audit*/
 docs/artigo/
 docs/poster/
+tmp/
+
+# Local correction inputs from the professor/template package.
+Template_SBC/
+critica_direta.txt
+dicas_gerais_do_prof.txt
 
 # Local video/image captures must not be committed by default.
 assets/private/
