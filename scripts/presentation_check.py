@@ -16,6 +16,7 @@ REPORT_PATH = RESULTS_DIR / "presentation_check_report.md"
 MEDIA_EXTENSIONS = {".jpg", ".jpeg", ".png", ".mp4", ".avi", ".mov", ".mkv"}
 ALLOWED_TRACKED_MEDIA = {
     "docs/entrega_professor/poster_secomp_grupo3.png",
+    "docs/entrega_professor/latex/pipeline_original.png",
 }
 ALLOWED_MEDIA_PREFIXES: tuple[str, ...] = ()
 ALLOWED_RESULTS_MEDIA = {
@@ -39,6 +40,7 @@ REQUIRED_DOCS = [
     "docs/entrega_professor/RESULTADOS_BENCHMARK.md",
     "docs/entrega_professor/artigo_edutech_vision_grupo3.pdf",
     "docs/entrega_professor/artigo_edutech_vision_grupo3.docx",
+    "docs/entrega_professor/latex/artigo_edutech_vision_grupo3.tex",
     "docs/entrega_professor/poster_secomp_grupo3.pdf",
     "docs/entrega_professor/poster_secomp_grupo3.png",
 ]

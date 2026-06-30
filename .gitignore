@@ -33,6 +33,8 @@ tmp/
 Template_SBC/
 critica_direta.txt
 dicas_gerais_do_prof.txt
+docs/entrega_professor/versao_antiga_pre_f43e582/
+docs/entrega_professor/~$*.docx
 
 # Local video/image captures must not be committed by default.
 assets/private/
@@ -48,6 +50,7 @@ assets/benchmarks/
 *.jpeg
 *.png
 !docs/entrega_professor/poster_secomp_grupo3.png
+!docs/entrega_professor/latex/pipeline_original.png
 !results/.gitkeep
 
 # OS/editor noise
