@@ -17,8 +17,7 @@
 \address{Bacharelado em Ciência da Computação\\
 Universidade do Estado de Mato Grosso (UNEMAT)\\
 Câmpus Universitário de Rondonópolis -- Rondonópolis -- MT -- Brasil\\
-\mbox{}\\[-6pt]\footnotesize\texttt{fernando.cobianchi@unemat.br}\\
-\texttt{samuel.bernini@unemat.br}
+\email{fernando.cobianchi@unemat.br, samuel.bernini@unemat.br}
 }
 
 \begin{document}
@@ -26,11 +25,11 @@ Câmpus Universitário de Rondonópolis -- Rondonópolis -- MT -- Brasil\\
 \maketitle
 
 \begin{abstract}
-EduTech Vision is a real-time digital image processing system for educational demonstrations of attention, posture and audience engagement. The current version has individual and audience modes without student identification. The standard pipeline combines OpenCV YuNet, MediaPipe Face Landmarker on expanded crops, EAR/MAR, solvePnP pose, moving averages and 10 s aggregation. In 960x540 smoke benchmarks, enhanced reached F1=0.712/29.0 FPS in individual mode and F1=0.583/74.5 FPS in audience mode. In a 1080p audience audit, it obtained 5/11 exact counts, 10/11 within one face and mean error 0.636. The system is a PDI demonstration, not a pedagogical or clinical diagnostic tool.
+EduTech Vision is a real-time digital image processing (DIP) system for demonstrating attention, posture and audience engagement in individual and audience modes, without student identification. The pipeline uses Open Source Computer Vision Library (OpenCV) YuNet, MediaPipe Face Landmarker, Eye/Mouth Aspect Ratios (EAR/MAR), Perspective-n-Point (PnP) pose, moving averages and 10 s aggregation. In 960x540 benchmarks, enhanced reached F1=0.712 in individual mode and F1=0.583 in audience mode; in a 1080p high-quality (HQ) audience audit, 10/11 counts were within one face. The system is a DIP demonstration, not a pedagogical or clinical diagnostic tool.
 \end{abstract}
 
 \begin{resumo}
-O EduTech Vision é um sistema de PDI em tempo real para demonstrações educacionais de atenção visual, postura e engajamento. A versão atual opera em modos individual e plateia, sem identificação de estudantes. O pipeline padrão combina OpenCV YuNet, MediaPipe Face Landmarker em recortes ampliados, EAR/MAR, pose por solvePnP, médias móveis e agregação de 10 s. Em benchmarks smoke a 960x540, enhanced alcançou F1=0,712/29,0 FPS no modo individual e F1=0,583/74,5 FPS no modo plateia. Em auditoria 1080p de plateia, obteve 5/11 acertos exatos, 10/11 casos com erro de no máximo um rosto e erro médio 0,636. O sistema é demonstração de PDI, não avaliação pedagógica ou diagnóstico clínico.
+O EduTech Vision é um sistema de Processamento Digital de Imagens (PDI) em tempo real para demonstrar atenção visual, postura e engajamento em modos individual e plateia, sem identificar estudantes. O pipeline usa Open Source Computer Vision Library (OpenCV) YuNet, MediaPipe Face Landmarker, razões olho/boca (EAR/MAR), pose Perspective-n-Point (PnP), médias móveis e agregação de 10 s. Em benchmarks 960x540, enhanced alcançou F1=0,712 no modo individual e F1=0,583 no modo plateia; em auditoria 1080p de alta qualidade (HQ), 10/11 contagens ficaram a até um rosto do valor manual. O sistema é demonstração de PDI, não avaliação pedagógica ou diagnóstico clínico.
 \end{resumo}
 
 \section{Introdução}
@@ -43,20 +42,20 @@ O objetivo deste artigo é apresentar a versão atual do sistema com linguagem c
 
 \section{Fundamentação}
 
-PDI e visão computacional combinam aquisição, pré-processamento, extração de características e tomada de decisão para interpretar padrões visuais \cite{gonzalez2018,szeliski2022}. Em aplicações com faces, detectores localizam regiões de interesse, enquanto modelos de landmarks estimam pontos anatômicos que permitem calcular medidas geométricas. O uso de detectores pré-treinados como front-end é adequado quando o processamento posterior explicita o núcleo de PDI, como ocorre com razões geométricas, estimativa de pose e suavização temporal.
+PDI e visão computacional combinam aquisição, pré-processamento, extração de características e tomada de decisão para interpretar padrões visuais \cite{gonzalez2018,szeliski2022}. Em aplicações com faces, detectores localizam regiões de interesse e são avaliados em bases como WIDER FACE \cite{yang2016}, enquanto modelos de landmarks estimam pontos anatômicos que permitem calcular medidas geométricas. O uso de detectores pré-treinados como front-end é adequado quando o processamento posterior explicita o núcleo de PDI, como ocorre com razões geométricas, estimativa de pose e suavização temporal.
 
-No modo individual, a razão de aspecto dos olhos, ou Eye Aspect Ratio (EAR), é calculada pela razão entre distâncias verticais e horizontais de pontos das pálpebras. Reduções sustentadas do EAR indicam olhos fechados por mais tempo que uma piscada comum. De modo análogo, a Mouth Aspect Ratio (MAR) relaciona abertura vertical e largura da boca, permitindo sinalizar bocejo quando o valor permanece elevado. Essas métricas são sensíveis a escala, pose, iluminação e qualidade dos landmarks; por isso são suavizadas antes da decisão.
+No modo individual, a razão de aspecto dos olhos, ou Eye Aspect Ratio (EAR), é calculada pela razão entre distâncias verticais e horizontais de pontos das pálpebras, abordagem comum em detecção de piscadas por landmarks faciais \cite{soukupova2016}. Reduções sustentadas do EAR indicam olhos fechados por mais tempo que uma piscada comum. De modo análogo, a Mouth Aspect Ratio (MAR) relaciona abertura vertical e largura da boca, permitindo sinalizar bocejo quando o valor permanece elevado. Essas métricas são sensíveis a escala, pose, iluminação e qualidade dos landmarks; por isso são suavizadas antes da decisão.
 
-A postura e o foco visual aproximado são estimados por pose de cabeça. O sistema usa correspondências 2D-3D de pontos faciais e a função solvePnP para obter yaw, pitch e roll. No modo plateia, yaw e pitch são comparados a um eixo de referência calibrado no início da sessão. A decisão final é agregada em janela temporal, pois quadros isolados podem conter ruído, oclusões ou landmarks incompletos.
+A postura e o foco visual aproximado são estimados por pose de cabeça. O sistema usa correspondências bidimensionais-tridimensionais (2D-3D) de pontos faciais e a função solvePnP, baseada no problema Perspective-n-Point, para obter yaw, pitch e roll \cite{lepetit2009}. No modo plateia, yaw e pitch são comparados a um eixo de referência calibrado no início da sessão. A decisão final é agregada em janela temporal, pois quadros isolados podem conter ruído, oclusões ou landmarks incompletos.
 
 \section{Sistema Proposto}
 
-A Figura~\ref{fig:pipeline} sintetiza o pipeline atual. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced: OpenCV YuNet detecta faces, aplica supressão de não máximos e prioriza candidatos; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker. O perfil mediapipe é mantido como baseline, enquanto o perfil research, baseado em SCRFD, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
+A Figura~\ref{fig:pipeline} sintetiza o pipeline atual. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced: OpenCV YuNet detecta faces, aplica supressão de não máximos e prioriza candidatos \cite{bradski2000,opencvzoo2026}; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker \cite{google2026}. O perfil mediapipe é mantido como baseline, enquanto o perfil research, baseado em Sample and Computation Redistribution for Efficient Face Detection (SCRFD) \cite{guo2021}, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{pipeline_original.png}
-\caption{Pipeline atual do EduTech Vision.}
+\caption{Pipeline atual do EduTech Vision. NMS indica supressão de não máximos.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -68,9 +67,9 @@ No modo plateia, a configuração atual usa confiança facial 0,60, limite de 24
 
 A avaliação foi organizada em quatro frentes. A primeira é o benchmark smoke do detector, que compara o baseline MediaPipe em quadro inteiro com o perfil enhanced em dois modos. As métricas são recall de face, recall de landmarks, precisão, F1, FPS médio e FPS mínimo. O recall de face considera uma caixa localizada corretamente; o recall de landmarks é mais restritivo e exige que a face também gere pontos suficientes para EAR, MAR ou pose.
 
-A segunda frente é a auditoria HQ de plateia. Nessa avaliação, vídeos 1080p são processados integralmente e quadros selecionados são comparados com contagens manuais de rostos avaliáveis. As métricas são acertos exatos, casos com erro de no máximo um rosto, erro absoluto médio, presença da contagem manual dentro da janela temporal de mais ou menos 1 s, FPS médio e FPS no percentil 10.
+A segunda frente é a auditoria de alta qualidade (HQ) de plateia. Nessa avaliação, vídeos 1080p são processados integralmente e quadros selecionados são comparados com contagens manuais de rostos avaliáveis. As métricas são acertos exatos, casos com erro de no máximo um rosto, erro absoluto médio, presença da contagem manual dentro da janela temporal de mais ou menos 1 s, quadros por segundo (FPS) médio e FPS no percentil 10.
 
-A terceira frente é o relatório de sessão. Ele demonstra instrumentação da aplicação por meio de logs CSV, gráficos, relatório HTML, relatório PDF, timeline de eventos e telemetria. Esses artefatos são usados para evidenciar capacidade de registro e reprodutibilidade da demonstração, e não como verdade final dos protocolos formais.
+A terceira frente é o relatório de sessão. Ele demonstra instrumentação da aplicação por meio de logs em valores separados por vírgula (CSV), gráficos, relatório em HyperText Markup Language (HTML), relatório em Portable Document Format (PDF), timeline de eventos e telemetria. Esses artefatos são usados para evidenciar capacidade de registro e reprodutibilidade da demonstração, e não como verdade final dos protocolos formais.
 
 Por fim, a versão atual contém metodologia e scripts para os cinco protocolos formais do plano da disciplina: robustez luminosa, resiliência a oclusão, telemetria de FPS, matriz de confusão e tolerância a falhas. Entretanto, não foram usados resultados históricos, preliminares ou logs finais antigos como evidência da versão atual. Na ausência de novos registros experimentais finais desses cinco protocolos, eles são tratados neste artigo como metodologia disponível para reexecução. O suporte a reconexão de câmera é descrito apenas como característica de robustez implementada, não como resultado experimental principal.
 
@@ -154,13 +153,13 @@ Também há diferença metodológica entre o FPS do benchmark e o FPS da auditor
 
 As limitações observadas são coerentes com aplicações de visão computacional em tempo real. Iluminação irregular, distância da câmera, oclusão parcial, rostos em perfil, faces pequenas, motion blur e cortes nas bordas reduzem a estabilidade dos landmarks. No modo individual, EAR e MAR variam entre pessoas e dependem da calibração inicial. No modo plateia, a métrica agregada estima orientação visual aproximada e não atenção cognitiva ou aprendizagem.
 
-\section{Considerações Éticas e LGPD}
+\section{Considerações Éticas e Lei Geral de Proteção de Dados}
 
 O EduTech Vision trata imagem de pessoas e, portanto, deve ser usado com minimização de dados, transparência e finalidade acadêmica. No modo individual, a captura deve ocorrer com consentimento do participante e sem uso punitivo, clínico ou classificatório. No modo plateia, o sistema opera apenas com métricas agregadas e não deve identificar alunos, registrar nomes, persistir frames ou permitir reidentificação.
 
 Por padrão, a proposta privilegia processamento local, descarte de imagens e armazenamento apenas de séries temporais, contagens, percentuais agregados e eventos de interface. Relatórios e gráficos devem ser usados para explicar o comportamento do pipeline, não para vigiar indivíduos. Em demonstrações públicas, recomenda-se sinalização visível sobre a captura de imagem, opção de afastamento da câmera e uso de voluntários quando forem necessárias evidências visuais.
 
-Essas escolhas atendem ao princípio de necessidade da Lei Geral de Proteção de Dados e reduzem o risco de interpretação abusiva. O sistema deve ser entendido como material didático de PDI, não como tecnologia de decisão automatizada sobre estudantes.
+Essas escolhas atendem ao princípio de necessidade da Lei Geral de Proteção de Dados (LGPD) \cite{brasil2018} e reduzem o risco de interpretação abusiva. O sistema deve ser entendido como material didático de PDI, não como tecnologia de decisão automatizada sobre estudantes.
 
 \section{Conclusão}
 
@@ -170,34 +169,9 @@ As evidências atuais sustentam o sistema como demonstração reprodutível e te
 
 \section*{Agradecimentos}
 
-Os autores agradecem ao curso de Bacharelado em Ciência da Computação da UNEMAT e ao docente da disciplina de Processamento Digital de Imagens pelas diretrizes do projeto. Ferramentas de IA generativa foram utilizadas pontualmente como apoio à revisão gramatical e à organização textual; o conteúdo técnico, a interpretação dos resultados e a responsabilidade final permanecem dos autores.
+Os autores agradecem ao curso de Bacharelado em Ciência da Computação da UNEMAT e ao docente da disciplina de Processamento Digital de Imagens pelas diretrizes do projeto. Ferramentas de inteligência artificial (IA) generativa foram utilizadas pontualmente como apoio à revisão gramatical e à organização textual; o conteúdo técnico, a interpretação dos resultados e a responsabilidade final permanecem dos autores.
 
-\begingroup
-\raggedright
-\begin{thebibliography}{}
-
-\bibitem[Brasil 2018]{brasil2018}
-Brasil (2018). Lei n\textsuperscript{o} 13.709, de 14 de agosto de 2018. Lei Geral de Proteção de Dados Pessoais.
-
-\bibitem[Gonzalez and Woods 2018]{gonzalez2018}
-Gonzalez, R. C. and Woods, R. E. (2018). Processamento Digital de Imagens. 4. ed. Pearson.
-
-\bibitem[Google 2026]{google2026}
-Google (2026). MediaPipe Face Landmarker. Disponível em: \url{https://developers.google.com/mediapipe}. Acesso em: 2026.
-
-\bibitem[OpenCV 2026]{opencv2026}
-OpenCV (2026). OpenCV Documentation. Disponível em: \url{https://docs.opencv.org}. Acesso em: 2026.
-
-\bibitem[OpenCV Zoo 2026]{opencvzoo2026}
-OpenCV Zoo (2026). YuNet Face Detection. Disponível em: \url{https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet}. Acesso em: 2026.
-
-\bibitem[Szeliski 2022]{szeliski2022}
-Szeliski, R. (2022). Computer Vision: Algorithms and Applications. 2. ed. Springer.
-
-\bibitem[Yang et al. 2016]{yang2016}
-Yang, S., Luo, P., Loy, C. C. and Tang, X. (2016). WIDER FACE: A Face Detection Benchmark. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition.
-
-\end{thebibliography}
-\endgroup
+\bibliographystyle{sbc}
+\bibliography{artigo_edutech_vision_grupo3}
 
 \end{document}
