@@ -50,7 +50,7 @@ A postura e o foco visual aproximado são estimados por pose de cabeça. O siste
 
 \section{Sistema Proposto}
 
-A Figura~\ref{fig:pipeline} sintetiza o pipeline atual. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced: OpenCV YuNet detecta faces, aplica supressão de não máximos e prioriza candidatos \cite{bradski2000,opencvzoo2026}; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker \cite{google2026}. O perfil mediapipe é mantido como baseline, enquanto o perfil research, baseado em Sample and Computation Redistribution for Efficient Face Detection (SCRFD) \cite{guo2021}, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
+A Figura~\ref{fig:pipeline} sintetiza o pipeline atual. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced: OpenCV YuNet detecta faces, aplica supressão de não máximos e prioriza candidatos \cite{wu2023}; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker \cite{google2026}. O perfil mediapipe é mantido como baseline, enquanto o perfil research, baseado em Sample and Computation Redistribution for Efficient Face Detection (SCRFD) \cite{guo2022}, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
 
 \begin{figure}[!htbp]
 \centering
@@ -151,8 +151,6 @@ Essa diferença é importante para interpretar o sistema. Uma face pode ser loca
 
 Também há diferença metodológica entre o FPS do benchmark e o FPS da auditoria HQ. O benchmark smoke mede o pipeline do detector em 960x540, com foco em comparação controlada entre perfis. A auditoria HQ processa vídeos 1080p completos, registra respostas por frame e avalia cenas com maior densidade visual. É esperado que os valores absolutos de FPS sejam menores nesse contexto.
 
-As limitações observadas são coerentes com aplicações de visão computacional em tempo real. Iluminação irregular, distância da câmera, oclusão parcial, rostos em perfil, faces pequenas, motion blur e cortes nas bordas reduzem a estabilidade dos landmarks. No modo individual, EAR e MAR variam entre pessoas e dependem da calibração inicial. No modo plateia, a métrica agregada estima orientação visual aproximada e não atenção cognitiva ou aprendizagem.
-
 \section{Considerações Éticas e Lei Geral de Proteção de Dados}
 
 O EduTech Vision trata imagem de pessoas e, portanto, deve ser usado com minimização de dados, transparência e finalidade acadêmica. No modo individual, a captura deve ocorrer com consentimento do participante e sem uso punitivo, clínico ou classificatório. No modo plateia, o sistema opera apenas com métricas agregadas e não deve identificar alunos, registrar nomes, persistir frames ou permitir reidentificação.
@@ -160,6 +158,10 @@ O EduTech Vision trata imagem de pessoas e, portanto, deve ser usado com minimiz
 Por padrão, a proposta privilegia processamento local, descarte de imagens e armazenamento apenas de séries temporais, contagens, percentuais agregados e eventos de interface. Relatórios e gráficos devem ser usados para explicar o comportamento do pipeline, não para vigiar indivíduos. Em demonstrações públicas, recomenda-se sinalização visível sobre a captura de imagem, opção de afastamento da câmera e uso de voluntários quando forem necessárias evidências visuais.
 
 Essas escolhas atendem ao princípio de necessidade da Lei Geral de Proteção de Dados (LGPD) \cite{brasil2018} e reduzem o risco de interpretação abusiva. O sistema deve ser entendido como material didático de PDI, não como tecnologia de decisão automatizada sobre estudantes.
+
+\section{Limitações}
+
+As limitações observadas são coerentes com aplicações de visão computacional em tempo real. Iluminação irregular, distância da câmera, oclusão parcial, rostos em perfil, faces pequenas, motion blur e cortes nas bordas reduzem a estabilidade dos landmarks. No modo individual, EAR e MAR variam entre pessoas e dependem da calibração inicial. No modo plateia, a métrica agregada estima orientação visual aproximada e não atenção cognitiva ou aprendizagem. Além disso, os cinco protocolos formais devem ser reexecutados com novos registros experimentais para substituir a matriz demonstrativa e completar a validação quantitativa final.
 
 \section{Conclusão}
 

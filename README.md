@@ -261,9 +261,13 @@ tests/       protocolos e testes unitarios
 
 O EduTech Vision e uma ferramenta academica de PDI. Os indicadores sao aproximacoes visuais baseadas em geometria facial, pose de cabeca e comportamento temporal. A qualidade depende de iluminacao, distancia da camera, FPS, resolucao e calibracao inicial.
 
+## Uso de IA Generativa
+
+Ferramentas de IA generativa foram utilizadas pontualmente como apoio ao desenvolvimento, depuracao, revisao de codigo, organizacao da documentacao e revisao gramatical do artigo. O conteudo tecnico, as decisoes de implementacao, os testes executados e a responsabilidade final pelo projeto permanecem dos autores.
+
 ## Referencias
 
-- Gonzalez, R. C.; Woods, R. E. Processamento Digital de Imagens. Pearson, 2018.
+- Gonzalez, R. C.; Woods, R. E. Digital Image Processing. 4. ed. Pearson, 2018.
 - Szeliski, R. Computer Vision: Algorithms and Applications. Springer, 2022.
 - OpenCV Documentation: https://docs.opencv.org
 - MediaPipe Face Landmarker: https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker
