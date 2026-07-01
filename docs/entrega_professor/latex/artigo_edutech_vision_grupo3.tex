@@ -25,11 +25,11 @@ Câmpus Universitário de Rondonópolis -- Rondonópolis -- MT -- Brasil\\
 \maketitle
 
 \begin{abstract}
-EduTech Vision is a real-time digital image processing (DIP) system for demonstrating attention, posture and audience engagement in individual and audience modes, without student identification. The pipeline uses Open Source Computer Vision Library (OpenCV) YuNet, MediaPipe Face Landmarker, Eye/Mouth Aspect Ratios (EAR/MAR), Perspective-n-Point (PnP) pose, moving averages and 10 s aggregation. In 960x540 benchmarks, enhanced reached F1=0.712 in individual mode and F1=0.583 in audience mode; in a 1080p high-quality (HQ) audience audit, 10/11 counts were within one face. The system is a DIP demonstration, not a pedagogical or clinical diagnostic tool.
+EduTech Vision is a real-time digital image processing (DIP) system for demonstrating attention, posture and audience engagement in individual and audience modes, without student identification. The pipeline uses the OpenCV YuNet face detector, MediaPipe Face Landmarker, Eye/Mouth Aspect Ratios (EAR/MAR), Perspective-n-Point (PnP) pose, moving averages and 10 s aggregation. In 960x540 benchmarks, the enhanced configuration reached F1=0.712 in individual mode and F1=0.583 in audience mode; in a 1080p high-quality (HQ) audience audit, 10/11 counts were within one face. The system is a DIP demonstration, not a pedagogical or clinical diagnostic tool.
 \end{abstract}
 
 \begin{resumo}
-O EduTech Vision é um sistema de Processamento Digital de Imagens (PDI) em tempo real para demonstrar atenção visual, postura e engajamento em modos individual e plateia, sem identificar estudantes. O pipeline usa Open Source Computer Vision Library (OpenCV) YuNet, MediaPipe Face Landmarker, razões olho/boca (EAR/MAR), pose Perspective-n-Point (PnP), médias móveis e agregação de 10 s. Em benchmarks 960x540, enhanced alcançou F1=0,712 no modo individual e F1=0,583 no modo plateia; em auditoria 1080p de alta qualidade (HQ), 10/11 contagens ficaram a até um rosto do valor manual. O sistema é demonstração de PDI, não avaliação pedagógica ou diagnóstico clínico.
+O EduTech Vision é um sistema de Processamento Digital de Imagens (PDI) em tempo real para demonstrar atenção visual, postura e engajamento em modos individual e plateia, sem identificar estudantes. O pipeline usa o detector facial YuNet da OpenCV, MediaPipe Face Landmarker, razões olho/boca (EAR/MAR), pose Perspective-n-Point (PnP), médias móveis e agregação de 10 s. Em benchmarks 960x540, a configuração enhanced alcançou F1=0,712 no modo individual e F1=0,583 no modo plateia; em auditoria 1080p de alta qualidade (HQ), 10/11 contagens ficaram a até um rosto do valor manual. O sistema é demonstração de PDI, não avaliação pedagógica ou diagnóstico clínico.
 \end{resumo}
 
 \section{Introdução}
@@ -38,7 +38,7 @@ A observação de atenção, postura e engajamento em ambientes educacionais cos
 
 Neste contexto, o EduTech Vision foi desenvolvido como produto acadêmico da Trilha 3: Atenção, Postura e Engajamento. O sistema possui dois cenários complementares: no modo individual, uma câmera frontal acompanha uma pessoa e estima fadiga, bocejo, queda postural e desatenção sustentada; no modo plateia, uma câmera voltada a um grupo calcula métricas agregadas de faces voltadas ao palco ou professor. O modo plateia não identifica alunos e não produz decisões individualizadas.
 
-O objetivo deste artigo é apresentar a versão atual do sistema com linguagem científica e evidências compatíveis com os resultados atuais disponíveis. O trabalho não afirma medir aprendizagem, rendimento escolar ou estado clínico. Os indicadores gerados são aproximações visuais para fins de demonstração acadêmica de PDI em tempo real.
+O objetivo deste artigo é apresentar a versão entregue do sistema com linguagem científica e evidências compatíveis com os resultados disponíveis. O trabalho não afirma medir aprendizagem, rendimento escolar ou estado clínico. Os indicadores gerados são aproximações visuais para fins de demonstração acadêmica de PDI em tempo real.
 
 \section{Fundamentação}
 
@@ -50,36 +50,36 @@ A postura e o foco visual aproximado são estimados por pose de cabeça. O siste
 
 \section{Sistema Proposto}
 
-A Figura~\ref{fig:pipeline} sintetiza o pipeline atual. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced: OpenCV YuNet detecta faces, aplica supressão de não máximos e prioriza candidatos \cite{wu2023}; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker \cite{google2026}. O perfil mediapipe é mantido como baseline, enquanto o perfil research, baseado em Sample and Computation Redistribution for Efficient Face Detection (SCRFD) \cite{guo2022}, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
+A Figura~\ref{fig:pipeline} sintetiza o pipeline entregue. A entrada pode ser câmera ou vídeo, processada em resolução padrão de 960x540. O perfil padrão é enhanced, isto é, uma configuração reforçada em que o YuNet da OpenCV detecta faces, aplica supressão de não máximos e prioriza candidatos \cite{wu2023}; em seguida, cada região é recortada com margem ampliada e enviada ao MediaPipe Face Landmarker \cite{google2026}. O perfil mediapipe é mantido como baseline, ou linha de base comparativa, enquanto o perfil research, baseado no detector Sample and Computation Redistribution for Efficient Face Detection (SCRFD) \cite{guo2022}, é apenas comparativo acadêmico e não constitui o padrão de distribuição.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{pipeline_original.png}
-\caption{Pipeline atual do EduTech Vision. NMS indica supressão de não máximos.}
+\caption{Pipeline do EduTech Vision. NMS indica supressão de não máximos.}
 \label{fig:pipeline}
 \end{figure}
 
-No modo individual, a configuração atual usa confiança facial 0,70 e no máximo uma face. A primeira etapa de uso realiza calibração de 5 s para estabelecer referências de EAR, MAR, yaw e pitch. Em seguida, as medidas passam por média móvel de janela 7 e por condições sustentadas, evitando que piscadas ou movimentos pontuais acionem alertas. Os alertas visuais indicam fadiga, bocejo, postura ruim e desatenção, sem atribuir diagnóstico clínico.
+No modo individual, a configuração entregue usa confiança facial 0,70 e no máximo uma face. A primeira etapa de uso realiza calibração de 5 s para estabelecer referências de EAR, MAR, yaw e pitch. Em seguida, as medidas passam por média móvel de janela 7 e por condições sustentadas, evitando que piscadas ou movimentos pontuais acionem alertas. Os alertas visuais indicam fadiga, bocejo, postura ruim e desatenção, sem atribuir diagnóstico clínico.
 
-No modo plateia, a configuração atual usa confiança facial 0,60, limite de 24 faces, tolerância de 30 graus em yaw, tolerância de 20 graus em pitch e janela de agregação de 10 s. Faces detectadas sem landmarks confiáveis podem aparecer no painel visual como detecções anônimas, mas não entram no cálculo de pose e engajamento. A saída persistida é agregada, composta por séries temporais e estatísticas da sessão.
+No modo plateia, a configuração entregue usa confiança facial 0,60, limite de 24 faces, tolerância de 30 graus em yaw, tolerância de 20 graus em pitch e janela de agregação de 10 s. Faces detectadas sem landmarks confiáveis podem aparecer no painel visual como detecções anônimas, mas não entram no cálculo de pose e engajamento. A saída persistida é agregada, composta por séries temporais e estatísticas da sessão.
 
 \section{Metodologia Experimental}
 
-A avaliação foi organizada em quatro frentes. A primeira é o benchmark smoke do detector, que compara o baseline MediaPipe em quadro inteiro com o perfil enhanced em dois modos. As métricas são recall de face, recall de landmarks, precisão, F1, FPS médio e FPS mínimo. O recall de face considera uma caixa localizada corretamente; o recall de landmarks é mais restritivo e exige que a face também gere pontos suficientes para EAR, MAR ou pose.
+A avaliação foi organizada em quatro frentes. A primeira é um benchmark preliminar automatizado do detector, que compara a linha de base MediaPipe em quadro inteiro com o perfil enhanced nos dois modos. As métricas são recall de face, recall de landmarks, precisão, F1, FPS médio e FPS mínimo. O recall de face considera uma caixa localizada corretamente; o recall de landmarks é mais restritivo e exige que a face também gere pontos suficientes para EAR, MAR ou pose.
 
 A segunda frente é a auditoria de alta qualidade (HQ) de plateia. Nessa avaliação, vídeos 1080p são processados integralmente e quadros selecionados são comparados com contagens manuais de rostos avaliáveis. As métricas são acertos exatos, casos com erro de no máximo um rosto, erro absoluto médio, presença da contagem manual dentro da janela temporal de mais ou menos 1 s, quadros por segundo (FPS) médio e FPS no percentil 10.
 
 A terceira frente é o relatório de sessão. Ele demonstra instrumentação da aplicação por meio de logs em valores separados por vírgula (CSV), gráficos, relatório em HyperText Markup Language (HTML), relatório em Portable Document Format (PDF), timeline de eventos e telemetria. Esses artefatos são usados para evidenciar capacidade de registro e reprodutibilidade da demonstração, e não como verdade final dos protocolos formais.
 
-Por fim, a versão atual contém metodologia e scripts para os cinco protocolos formais do plano da disciplina: robustez luminosa, resiliência a oclusão, telemetria de FPS, matriz de confusão e tolerância a falhas. Entretanto, não foram usados resultados históricos, preliminares ou logs finais antigos como evidência da versão atual. Na ausência de novos registros experimentais finais desses cinco protocolos, eles são tratados neste artigo como metodologia disponível para reexecução. O suporte a reconexão de câmera é descrito apenas como característica de robustez implementada, não como resultado experimental principal.
+Por fim, a versão entregue contém metodologia e scripts para os cinco protocolos formais do plano da disciplina: robustez luminosa, resiliência a oclusão, telemetria de FPS, matriz de confusão e tolerância a falhas. Entretanto, não foram usados resultados históricos, preliminares ou logs finais antigos como evidência da entrega. Na ausência de novos registros experimentais finais desses cinco protocolos, eles são tratados neste artigo como metodologia disponível para reexecução. O suporte a reconexão de câmera é descrito apenas como característica de robustez implementada, não como resultado experimental principal.
 
 \section{Resultados}
 
-A Tabela~\ref{tab:benchmark} apresenta o benchmark smoke canônico da versão atual. Em ambos os modos, o perfil enhanced aumenta substancialmente o recall de face e o F1 em relação ao baseline MediaPipe, mantendo desempenho em tempo real. A redução de FPS é esperada, pois o pipeline passa a executar detecção por YuNet, recortes ampliados e landmarks em regiões de interesse, em vez de depender apenas do rastreamento direto no quadro inteiro.
+A Tabela~\ref{tab:benchmark} apresenta o benchmark preliminar automatizado da versão entregue. Em ambos os modos, o perfil enhanced aumenta substancialmente o recall de face e o F1 em relação à linha de base MediaPipe, mantendo desempenho em tempo real. A redução de FPS é esperada, pois o pipeline passa a executar detecção por YuNet, recortes ampliados e landmarks em regiões de interesse, em vez de depender apenas do rastreamento direto no quadro inteiro.
 
 \begin{table}[!htbp]
 \centering
-\caption{Benchmark smoke do detector em 960x540.}
+\caption{Benchmark preliminar automatizado do detector em 960x540.}
 \label{tab:benchmark}
 \scriptsize
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -123,7 +123,7 @@ FPS p10 & 9,4\\
 \end{tabular}
 \end{table}
 
-A matriz de confusão disponível na versão revisada é demonstrativa. Ela contém 50 amostras sintéticas de atenção e desatenção, usadas para testar o fluxo de cálculo, visualização e relatório. A Tabela~\ref{tab:confusao} mostra que houve 46 acertos e 4 erros, produzindo acurácia, precisão macro, recall macro e F1 macro de 0,92. Como as amostras são explicitamente demonstrativas, esse resultado não é apresentado como validação científica real; a validação final exige amostras reais rotuladas.
+A matriz de confusão disponível na entrega é demonstrativa. Ela contém 50 amostras sintéticas de atenção e desatenção, usadas para testar o fluxo de cálculo, visualização e relatório. A Tabela~\ref{tab:confusao} mostra que houve 46 acertos e 4 erros, produzindo acurácia, precisão macro, recall macro e F1 macro de 0,92. Como as amostras são explicitamente demonstrativas, esse resultado não é apresentado como validação científica real; a validação final exige amostras reais rotuladas.
 
 \begin{table}[!htbp]
 \centering
@@ -149,7 +149,7 @@ Os resultados justificam o uso do perfil enhanced como padrão. O baseline Media
 
 Essa diferença é importante para interpretar o sistema. Uma face pode ser localizada por caixa, mas não gerar landmarks estáveis o suficiente para pose, EAR ou MAR. Nesses casos, a face pode ser desenhada de forma anônima, mas não deve influenciar métricas de atenção ou engajamento. Por isso, recall de face e recall de landmarks são relatados separadamente.
 
-Também há diferença metodológica entre o FPS do benchmark e o FPS da auditoria HQ. O benchmark smoke mede o pipeline do detector em 960x540, com foco em comparação controlada entre perfis. A auditoria HQ processa vídeos 1080p completos, registra respostas por frame e avalia cenas com maior densidade visual. É esperado que os valores absolutos de FPS sejam menores nesse contexto.
+Também há diferença metodológica entre o FPS do benchmark e o FPS da auditoria HQ. O benchmark preliminar mede o pipeline do detector em 960x540, com foco em comparação controlada entre perfis. A auditoria HQ processa vídeos 1080p completos, registra respostas por frame e avalia cenas com maior densidade visual. É esperado que os valores absolutos de FPS sejam menores nesse contexto.
 
 \section{Considerações Éticas e Lei Geral de Proteção de Dados}
 
@@ -165,9 +165,9 @@ As limitações observadas são coerentes com aplicações de visão computacion
 
 \section{Conclusão}
 
-Este artigo apresentou a versão atual do EduTech Vision, uma aplicação funcional de PDI em tempo real para monitoramento aproximado de atenção visual, postura e engajamento agregado. A arquitetura atual combina YuNet, MediaPipe Face Landmarker em recortes ampliados, EAR, MAR, solvePnP, suavização temporal e relatórios de sessão. O benchmark smoke mostra que o perfil enhanced supera o baseline MediaPipe em recall e F1 nos dois modos, enquanto a auditoria HQ indica desempenho aceitável para contagem agregada em vídeos mais pesados.
+Este artigo apresentou a versão entregue do EduTech Vision, uma aplicação funcional de PDI em tempo real para monitoramento aproximado de atenção visual, postura e engajamento agregado. A arquitetura combina YuNet, MediaPipe Face Landmarker em recortes ampliados, EAR, MAR, solvePnP, suavização temporal e relatórios de sessão. O benchmark preliminar mostra que o perfil enhanced supera a linha de base MediaPipe em recall e F1 nos dois modos, enquanto a auditoria HQ indica desempenho aceitável para contagem agregada em vídeos mais pesados.
 
-As evidências atuais sustentam o sistema como demonstração reprodutível e tecnicamente coerente para a Trilha 3. Ao mesmo tempo, a matriz de confusão disponível é apenas demonstrativa e os cinco protocolos formais devem ser reexecutados com novos registros experimentais finais para uma validação máxima da versão atual. Trabalhos futuros incluem ampliar amostras reais rotuladas, testar diferentes condições de iluminação e distância, melhorar a estabilidade de landmarks em rostos pequenos e refinar a comunicação ética do uso em ambientes educacionais.
+As evidências disponíveis sustentam o sistema como demonstração reprodutível e tecnicamente coerente para a Trilha 3. Ao mesmo tempo, a matriz de confusão disponível é apenas demonstrativa e os cinco protocolos formais devem ser reexecutados com novos registros experimentais finais para uma validação máxima da entrega. Trabalhos futuros incluem ampliar amostras reais rotuladas, testar diferentes condições de iluminação e distância, melhorar a estabilidade de landmarks em rostos pequenos e refinar a comunicação ética do uso em ambientes educacionais.
 
 \section*{Agradecimentos}
 
